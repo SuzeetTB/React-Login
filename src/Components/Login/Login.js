@@ -7,13 +7,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 export const Login = () => {
-    
     const [passwordShown, setPasswordShown] = useState(false);
-    const [credentials, setcredentials] = useState({
-        email:'',
-        password:'',
-        remember:false
-    });
     const togglePasswordVisiblity = () => {
         setPasswordShown(passwordShown ? false : true);
       };
@@ -25,9 +19,22 @@ export const Login = () => {
           .max(20, "too long")
           .required("Required"),
     });
-    const handleInputs=()=>{
 
-    }
+    const formik = useFormik({
+        
+        initialValues: {
+          email: '',
+          password:'',
+          remember:false
+        },
+        validationSchema: ValidationSchema,
+        onSubmit: async (values) => {
+            debugger
+            console.log(values);
+          alert(JSON.stringify(values, null, 2));
+        },
+      });
+
     return (
         <Grid>
             <Paper 
@@ -35,7 +42,7 @@ export const Login = () => {
                 style = {{
                     padding:20,
                     height:'70vh',
-                    width:300,
+                    width:350,
                     margin:"40px auto"
                 }}
                 >
@@ -43,15 +50,17 @@ export const Login = () => {
                     <Avatar style={{backgroundColor:'#3f51b5'}}><LockOutlinedIcon /></Avatar>
                     <h2>Log In</h2>
                 </Grid>
-                <TextField fullWidth required label='Email ID' placeholder = 'hello@blabla.com' />
-                <div style={{display:'flex', marginTop:10}}>
-                <TextField fullWidth required label='Password' placehorder = 'Enter Password' type = {passwordShown ? "text" : "password"}/>
-                {passwordShown ? 
-                    (<VisibilityOutlinedIcon onClick={togglePasswordVisiblity} className="password-toggle"/>) 
-                    : (<VisibilityOffOutlinedIcon onClick={togglePasswordVisiblity} className="password-toggle"/>)}
-                </div>
-                <FormControlLabel control = {<Checkbox name="remember" color="primary"/>}label="Remember Me"/>
-                <Button type='submit' color='primary' variant='contained' fullWidth style={{margin:'28px 0'}}>Log In</Button>
+                <form onSubmit={formik.handleSubmit}>
+                    <TextField fullWidth required label='Email ID' placeholder = 'hello@blabla.com'  {...formik.getFieldProps("email")}/>
+                    <div style={{display:'flex', marginTop:10}}>
+                    <TextField fullWidth required label='Password' placehorder = 'Enter Password' type = {passwordShown ? "text" : "password"} {...formik.getFieldProps("password")}/>
+                    {passwordShown ? 
+                        (<VisibilityOutlinedIcon onClick={togglePasswordVisiblity} className="password-toggle"/>) 
+                        : (<VisibilityOffOutlinedIcon onClick={togglePasswordVisiblity} className="password-toggle"/>)}
+                    </div>
+                    <FormControlLabel control = {<Checkbox name="remember" color="primary"/>} label="Remember Me" {...formik.getFieldProps("remember")}/>
+                    <Button type='submit' color='primary' variant='contained' fullWidth style={{margin:'28px 0'}}>Log In</Button>
+                </form>
                 <Typography>
                     <Link href="#">
                         Forgot Password?
